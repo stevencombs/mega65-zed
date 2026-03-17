@@ -1,0 +1,10 @@
+{
+  "file_types": {
+    "Plain Text": ["bas"]
+  },
+  "languages": {
+    "Plain Text": {
+      "show_completions_on_input": true
+    }
+  }
+}

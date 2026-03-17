@@ -2,6 +2,8 @@
 
 Welcome, retroCombians! This repository contains everything you need to turn the incredibly fast [Zed](https://zed.dev) text editor into a fully-featured, integrated development environment (IDE) for the MEGA65.
 
+🚧️ NOTE: This is still a work in progress and under construction. It likely won't work for you yet but I'm working on it!
+
 Whether you are pushing code to real MEGA65 hardware over Ethernet or testing on the go with the XEMU emulator, MEGA65-ZED streamlines your BASIC65 workflow.
 
 ## 🌟 Features
