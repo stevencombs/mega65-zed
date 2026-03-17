@@ -1,0 +1,22 @@
+[
+  {
+    "label": "MEGA65: Send to Hardware",
+    "command": "/bin/sh",
+    "args": [
+      "-c",
+      "echo \"Compiling for MEGA65...\" && petcat -w65 -o \"$ZED_DIRNAME/build.prg\" \"$ZED_FILE\" && echo \"Sending via Ethernet...\" && etherload -r \"$ZED_DIRNAME/build.prg\" && echo \"Done!\"",
+    ],
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+  },
+  {
+    "label": "MEGA65: Run in XEMU",
+    "command": "/bin/sh",
+    "args": [
+      "-c",
+      "echo \"Compiling for XEMU...\" && petcat -w65 -o \"$ZED_DIRNAME/build.prg\" \"$ZED_FILE\" && echo \"Launching XEMU...\" && xmega65 -prg \"$ZED_DIRNAME/build.prg\"",
+    ],
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false,
+  },
+]
