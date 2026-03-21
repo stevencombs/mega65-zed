@@ -1,6 +1,6 @@
 id = "mega65"
 name = "MEGA65"
-version = "1.0.0"
+version = "0.5.0"
 schema_version = 1
 authors = ["retroCombs <steven@retrocombs.com>"]
 description = "MEGA65 development environment with rainbow boot-screen theme and PETSCII snippets"

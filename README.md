@@ -1,4 +1,4 @@
-# retroCombs MEGA65-ZED Environment for Mac
+# retroCombs MEGA65-ZED Environment for Mac Version 0.5.0
 
 <p align="center">
   <img src="mega65-zed.png" alt="MEGA65 Zed IDE Screenshot" width="80%">
