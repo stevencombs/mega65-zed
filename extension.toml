@@ -1,0 +1,11 @@
+id = "mega65"
+name = "MEGA65"
+version = "1.0.0"
+schema_version = 1
+authors = ["retroCombs <steven@retrocombs.com>"]
+description = "MEGA65 development environment with rainbow boot-screen theme and PETSCII snippets"
+repository = "https://github.com/stevencombs/mega65-zed"
+
+[theme]
+name = "MEGA65 Dark"
+path = "themes/mega65.json"
