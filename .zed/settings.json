@@ -1,10 +1,5 @@
 {
-  "file_types": {
-    "Plain Text": ["bas"]
+  "file_associations": {
+    "*.m65": "Plain Text",
   },
-  "languages": {
-    "Plain Text": {
-      "show_completions_on_input": true
-    }
-  }
 }

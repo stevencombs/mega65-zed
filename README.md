@@ -1,65 +1,91 @@
 # retroCombs MEGA65-ZED Environment for Mac
 
-Welcome, retroCombians! This repository contains everything you need to turn the incredibly fast [Zed](https://zed.dev) text editor into a fully-featured, integrated development environment (IDE) for the MEGA65.
+Welcome, retroCombians! 🇺🇲🐰  
+This repository turns the lightning-fast [Zed](https://zed.dev) editor into a practical, beautiful development environment for **MEGA65 BASIC65** programming.
 
-🚧️ NOTE: This is still a work in progress and under construction. It likely won't work for you yet but I'm working on it!
+You get:
+- The iconic MEGA65 rainbow boot-screen theme (deep blue + colorful accents)
+- A full set of PETSCII mnemonic snippets (type `clr` → `{clr}`, `10print` → classic hello loop, etc.)
+- One-click tasks to compile & send code to real MEGA65 hardware (via Ethernet) or XEMU (`xmega65`)
 
-Whether you are pushing code to real MEGA65 hardware over Ethernet or testing on the go with the XEMU emulator, MEGA65-ZED streamlines your BASIC65 workflow.
+🚧 **Current status (March 2025):** This is a working personal setup. Snippets and theme are reliable; custom language auto-detection is still experimental.
 
-## 🌟 Features
+## 🌟 Features (what actually works today)
 
-* **Zero-Friction Install:** Automatically downloads and installs the Zed Editor if you don't already have it!
-* **Automated Toolchain Setup:** A single script downloads and configures `petcat` (for tokenizing) and `etherload` (for sending PRGs to hardware).
-* **Emulator Integration:** Automatically links your existing XEMU (`xmega65`) installation so you can compile and launch directly from Zed.
-* **1-Click Build Tasks:** Zed tasks to instantly compile and send your code to hardware or the emulator.
-* **BASIC65 Snippets:** Over 40 built-in Zed snippets for MEGA65 PETSCII mnemonics (e.g., type `m65clr` to instantly insert `{clr}`).
+- **Beautiful MEGA65 boot-screen theme** — deep blue background, rainbow keyword accents
+- **PETSCII & BASIC65 snippets** — 30+ ready-to-use mnemonics and starters
+- **One-click build & run tasks** — compile to PRG and send to hardware (`etherload`) or emulator (`xmega65`)
+- **.m65 file extension** — auto-opens as Plain Text (snippets work instantly)
 
 ## 🛠️ Prerequisites
 
-* A Mac (Intel or Apple Silicon)
-* *(Optional)* The `xmega65` emulator installed in your `Applications` folder if you wish to use the emulator build task.
+- macOS (Intel or Apple Silicon)
+- [Zed editor](https://zed.dev) installed
+- (Optional) XEMU emulator with `xmega65` app in `/Applications` for emulator task
+- Internet access for first-time setup (downloads petcat & etherload)
 
 ## 🚀 Installation
 
-1. **Download this repository:** Clone it via Git or download it as a ZIP file and extract it to a permanent location on your Mac (e.g., `~/Projects/mega65-zed`).
-2. **Open your Terminal** and navigate to that folder.
-3. **Make the installer executable** by running:
-~~~bash
+1. Clone or download this repo to a permanent location (e.g. `~/Projects/mega65-zed`)
+2. Open Terminal and `cd` into that folder
+3. Make the installer executable:
+
+```bash
 chmod +x mega65zed-install.sh
-~~~
-4. **Run the setup script:**
-~~~bash
+```
+
+4. Run the setup script:
+
+```bash
 ./mega65zed-install.sh
-~~~
-5. **Restart your Terminal** (or run `source ~/.zshrc`) to apply the new MEGA65 tools to your system path.
+```
 
-## 💻 How to Use in Zed
+5. Restart Terminal (or `source ~/.zshrc`) so the new tools are in your PATH
 
-### Project vs. Global Settings
+## 💻 How to Use
 
-This folder contains a hidden folder called `.zed` (press `Cmd + Shift + .` in Finder to see it).
+1. **Open the project folder in Zed**  
+   File → Open Folder → select `mega65-zed`
 
-* **Local Mode:** If you open this specific `mega65-zed` folder in Zed, the tasks and snippets will work automatically.
-* **Global Mode (Recommended):** To use these MEGA65 features in *any* folder on your Mac, copy the contents of `tasks.json` and `snippets.json` into your global Zed settings (`~/.config/zed/tasks.json` and `~/.config/zed/snippets.json`).
+2. **Install the dev extension**  
+   Zed will prompt you → click **Install Dev Extension**
 
-### Writing Code (Snippets)
+3. **Copy the snippets once** (run this in the project folder):
 
-While typing in a `.bas` or `.txt` file, type `m65` to see a full list of MEGA65 PETSCII mnemonics.
-For example, type `m65clr` and press `Enter` to instantly insert `{clr}`.
+```bash
+./copy-snippets.sh
+```
 
-### Compiling and Running (Tasks)
+This copies the PETSCII snippets into Zed's global snippet file so they work everywhere.
 
-1. Write your BASIC65 code.
-2. Open the Zed Command Palette (`Cmd + Shift + P`).
-3. Type **"task: spawn"** and press `Enter`.
-4. Select either **"MEGA65: Send to Hardware"** or **"MEGA65: Run in XEMU"**.
-   Zed will automatically compile your active file to a `build.prg` file in the same directory and launch it!
+4. **Select the theme**  
+   Zed → Themes → choose **MEGA65 Dark**
 
----
-### 🔗 Let's Connect!
+5. **Start coding**  
+   - Create files with `.m65` extension (e.g. `hello.m65`)  
+   - Type `clr` → Tab → `{clr}`  
+   - Type `10print` → Tab → classic rainbow loop  
+   - Type `graphic` → Tab → `GRAPHIC 1,1 : REM 320x200 bitmap`
 
-Subscribe and follow for more MEGA65 and retro computing content:
+6. **Compile & run**  
+   Cmd + Shift + P → type "task: spawn" → choose  
+   - **MEGA65: Send to Hardware** (real machine over Ethernet)  
+   - **MEGA65: Run in XEMU** (emulator)
 
-* [retroCombs on YouTube](https://www.youtube.com/@retrocombs)
-* [retroCombs Tech on YouTube](https://www.youtube.com/@retrocombs-tech)
-* [The retroCombs Blog](https://www.retrocombs.com)
+## 🔧 Current limitations & roadmap
+
+- `.m65` files open as **Plain Text** (snippets work, but no custom "BASIC65" language name yet)
+- Syntax highlighting is basic (more MEGA65-specific keywords coming soon)
+- Linux port of install script planned next
+
+## 🔗 Connect & follow along
+
+- [retroCombs on YouTube](https://www.youtube.com/@retrocombs)
+- [retroCombs Tech on YouTube](https://www.youtube.com/@retrocombs-tech)
+- [The retroCombs Blog](https://www.retrocombs.com)
+- MEGA65 community: [mega65.org](https://www.mega65.org) • Discord • Forum
+
+Happy coding, retroCombians!  
+`10 PRINT "HELLO, MEGA65!": GOTO 10`
+
+Made with ❤️ by retroCombs, Grok, and Gemini
