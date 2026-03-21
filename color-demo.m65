@@ -1,0 +1,9 @@
+10 rem === zed + mega65 rainbow demo ===
+20 speed 3 : print chr$(147):poke 53297,peek(53297) and 127
+30 for c=1 to 16
+40 color c
+50 cursor rnd(1)*28,rnd(1)*20:print " >hello retrocombians< "
+60 sound 1,950+c*92,12
+70 for w=1 to 95:next w
+80 next
+90 goto 30
