@@ -62,6 +62,9 @@ chmod +x mega65zed-install.sh
 ./copy-snippets.sh
 ```
 
+> *Why a separate snippet copy step?*
+> At this time, Zed dev extensions can be unreliable at loading snippets directly from the repo for Plain Text files. This one-time script copies them into your global Zed config so they work everywhere — even outside this project folder.
+
 This copies the PETSCII snippets into Zed's global snippet file so they work everywhere.
 
 4. **Select the theme**  
