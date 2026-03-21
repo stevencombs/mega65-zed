@@ -1,6 +1,6 @@
 # retroCombs MEGA65-ZED Environment for Mac
 
-![MEGA65-ZED UI IMAGE](mega65.zed.png "MEGA65-ZED UI")
+![MEGA65-ZED UI IMAGE](mega65.zed.png)
 
 Welcome, retroCombians! 🇺🇲🐰  
 This repository turns the lightning-fast [Zed](https://zed.dev) editor into a practical, beautiful development environment for **MEGA65 BASIC65** programming.
