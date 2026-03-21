@@ -2,3 +2,4 @@
 20 background 0
 25 print chr$(14)
 30 print "{clr}{grn}hello, retroCombians!"
+40 print "r"
