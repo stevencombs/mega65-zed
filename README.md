@@ -1,100 +1,82 @@
-# retroCombs MEGA65-ZED Environment for Mac Version 0.5.0
+# retroCombs MEGA65-ZED Environment for Mac Version 0.6.0
 
 <p align="center">
   <img src="mega65-zed.png" alt="MEGA65 Zed IDE Screenshot" width="80%">
   <br>
-  <em>MEGA65 Zed IDE – theme, snippets and tasks ready to go</em>
+  <em>MEGA65 Zed IDE — navy listing, phosphor Grok, PETSCII tokens</em>
 </p>
 
-Welcome, retroCombians! 🇺🇲🐰  
-This repository turns the lightning-fast [Zed](https://zed.dev) editor into a practical, beautiful development environment for **MEGA65 BASIC65** programming.
+Turns [Zed](https://zed.dev) into a MEGA65 BASIC65 desk that matches the VIC-20 and C64 workflows in [CBM](https://github.com/stevencombs/CBM): listing on the left, Grok in the **bottom** terminal, Check / Run / Push / Push+run as **your** tasks.
 
-You get:
-- The iconic MEGA65 rainbow boot-screen theme (deep blue + colorful accents)
-- A full set of PETSCII mnemonic snippets (type `clr` → `{clr}`, `10print` → classic hello loop, etc.)
-- One-click tasks to compile & send code to real MEGA65 hardware (via Ethernet) or XEMU (`xmega65`)
+MEGA65-only pieces stay: BASIC65 (`petcat -w65`, load `$2001`), `GRAPHIC`, Ethernet `etherload`, XEMU `xmega65`, and `keymap.cfg` for the emulator.
 
-🚧 **Current status (March 2025):** This is a working personal setup. Snippets and theme are reliable; custom language auto-detection is still experimental.
+## Desk
 
-## 🌟 Features (what actually works today)
+| | MEGA65 |
+|--|--|
+| Listing | **MEGA65 Dark** — navy paper (`#000080`), gold keywords, green cursor |
+| Chrome / Grok | Black glass, phosphor green (same as VIC-20 / C64) |
+| Font | Source Code Pro, autosave 1s |
+| Files | `.m65` → MEGA65 BASIC |
+| Check | `petcat -w65` → `export/<name>.prg` |
+| Run | XEMU `xmega65 -prg` |
+| Push | `etherload` (load, you type `RUN`) |
+| Push+run | `etherload -r` (same as **Send to Hardware**) |
 
-- **Beautiful MEGA65 boot-screen theme** — deep blue background, rainbow keyword accents
-- **PETSCII & BASIC65 snippets** — 30+ ready-to-use mnemonics and starters
-- **One-click build & run tasks** — compile to PRG and send to hardware (`etherload`) or emulator (`xmega65`)
-- **.m65 file extension** — auto-opens as Plain Text (snippets work instantly)
+Zed 1.20 Agent chat uses the listing paper. Leave it closed. **⌘⇧G** / **⌘J** toggles the bottom terminal. **task: spawn → Grok Build**.
 
-## 🛠️ Prerequisites
+Open a `.m65` buffer to see the navy paper (an empty pane stays black).
 
-- macOS (Intel or Apple Silicon)
-- [Zed editor](https://zed.dev) installed
-- (Optional) XEMU emulator with `xmega65` app in `/Applications` for emulator task
-- Internet access for first-time setup (downloads petcat & etherload)
-
-## 🚀 Installation
-
-1. Clone or download this repo to a permanent location (e.g. `~/Projects/mega65-zed`)
-2. Open Terminal and `cd` into that folder
-3. Make the installer executable:
+## Install
 
 ```bash
-chmod +x mega65zed-install.sh
-```
-
-4. Run the setup script:
-
-```bash
+chmod +x mega65zed-install.sh scripts/mega65.sh copy-snippets.sh
 ./mega65zed-install.sh
-```
-
-5. Restart Terminal (or `source ~/.zshrc`) so the new tools are in your PATH
-
-## 💻 How to Use
-
-1. **Open the project folder in Zed**  
-   File → Open Folder → select `mega65-zed`
-
-2. **Install the dev extension**  
-   Zed will prompt you → click **Install Dev Extension**
-
-3. **Copy the snippets once** (run this in the project folder):
-
-```bash
 ./copy-snippets.sh
 ```
 
-> *Why a separate snippet copy step?*
-> At this time, Zed dev extensions can be unreliable at loading snippets directly from the repo for Plain Text files. This one-time script copies them into your global Zed config so they work everywhere — even outside this project folder.
+In Zed: **zed: extensions → Install Dev Extension** → this folder. Theme **MEGA65 Dark**.
 
-This copies the PETSCII snippets into Zed's global snippet file so they work everywhere.
+From the CBM repo: `~/CBM/scripts/retro mega65` (or set `MEGA65_ZED` if the clone is not under Google Drive).
 
-4. **Select the theme**  
-   Zed → Themes → choose **MEGA65 Dark**
+## Tasks (command palette → `task: spawn`)
 
-5. **Start coding**  
-   - Create files with `.m65` extension (e.g. `hello.m65`)  
-   - Type `clr` → Tab → `{clr}`  
-   - Type `10print` → Tab → classic rainbow loop  
-   - Type `graphic` → Tab → `GRAPHIC 1,1 : REM 320x200 bitmap`
+Same verbs as VIC-20 / C64:
 
-6. **Compile & run**  
-   Cmd + Shift + P → type "task: spawn" → choose  
-   - **MEGA65: Send to Hardware** (real machine over Ethernet)  
-   - **MEGA65: Run in XEMU** (emulator)
+| Task | What |
+|------|------|
+| **MEGA65: Check listing** | Tokenize BASIC65. No emulator, no Ethernet. |
+| **MEGA65: Run in XEMU** | Check, then `xmega65 -prg`. |
+| **MEGA65: Push** | `etherload` — programme is in memory; you `RUN`. |
+| **MEGA65: Push+run** | `etherload -r`. |
+| **MEGA65: Send to Hardware** | Alias of Push+run (old name). |
+| **Grok Build** | Bottom TUI. |
 
-## 🔧 Current limitations & roadmap
+Grok does not Push. You press those tasks.
 
-- `.m65` files open as **Plain Text** (snippets work, but no custom "BASIC65" language name yet)
-- Syntax highlighting is basic (more MEGA65-specific keywords coming soon)
-- Linux port of install script planned next
+## Tokens
 
-## 🔗 Connect & follow along
+Type `red`, `clr`, `orng`, `lred`, `graphic`, `10print` then Tab. Sixteen C64 colours plus F1–F8, using VICE `petcat` spellings (`{rght}`, `{lred}`, `{swlc}`).
 
-- [retroCombs on YouTube](https://www.youtube.com/@retrocombs)
-- [retroCombs Tech on YouTube](https://www.youtube.com/@retrocombs-tech)
-- [The retroCombs Blog](https://www.retrocombs.com)
-- MEGA65 community: [mega65.org](https://www.mega65.org) • Discord • Forum
+MEGA65-only starters: `graphic` → `GRAPHIC 1,1`, `10print` → hello loop.
 
-Happy coding, retroCombians!  
-`10 PRINT "HELLO, MEGA65!": GOTO 10`
+## Tools
 
-Made with ❤️ by retroCombs, Grok, and Gemini
+- **petcat -w65** — Homebrew VICE 3.10 on Apple Silicon. Filehost `~/.retrocombs-m65/bin/petcat` is Intel-only; the installer still places it for Intel Macs.
+- **etherload** — `~/.retrocombs-m65/bin/etherload` from [mega65-tools](https://github.com/MEGA65/mega65-tools). Extra flags (`--ntsc`, `--mount`, `-j`) remain available on the CLI.
+- **xmega65** — `/Applications/xmega65.app`. Optional `keymap.cfg` in this repo goes in the XEMU system folder.
+
+`scripts/mega65.sh` is the same shape as CBM `vic20.sh` / `c64.sh`.
+
+## Prerequisites
+
+- macOS, [Zed](https://zed.dev), Source Code Pro (`brew install --cask font-source-code-pro`)
+- Homebrew VICE (`petcat`)
+- Optional: XEMU `xmega65` in `/Applications`, MEGA65 on Ethernet for Push
+
+## Connect
+
+- [retroCombs](https://www.retrocombs.com) · [YouTube](https://www.youtube.com/@retrocombs)
+- [mega65.org](https://www.mega65.org)
+
+Made with care by retroCombs, Grok, and Gemini.

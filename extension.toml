@@ -1,10 +1,11 @@
 id = "mega65"
 name = "MEGA65"
-version = "0.5.0"
+version = "0.6.0"
 schema_version = 1
 authors = ["retroCombs <steven@retrocombs.com>"]
-description = "MEGA65 development environment with rainbow boot-screen theme and PETSCII snippets"
+description = "MEGA65 BASIC65 in Zed: navy listing (boot screen), phosphor-green Grok chrome, PETSCII tokens, etherload and XEMU"
 repository = "https://github.com/stevencombs/mega65-zed"
+snippets = ["snippets/mega65 basic.json"]
 
 [theme]
 name = "MEGA65 Dark"

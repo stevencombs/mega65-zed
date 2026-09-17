@@ -1,0 +1,5 @@
+.DS_Store
+build.prg
+export/*.prg
+export/*.d64
+export/*.d81
