@@ -4,8 +4,9 @@ set -euo pipefail
 SRC="$(cd "$(dirname "$0")" && pwd)/snippets"
 DEST="${HOME}/.config/zed/snippets"
 mkdir -p "$DEST"
+cp "$SRC/cbm basic.json" "$DEST/cbm basic.json"
 cp "$SRC/mega65 basic.json" "$DEST/mega65 basic.json"
 # Plain Text fallback (Zed dev extensions can miss language-scoped snippets)
-cp "$SRC/mega65 basic.json" "$DEST/plaintext.json"
-echo "MEGA65 snippets → $DEST"
+cp "$SRC/cbm basic.json" "$DEST/plaintext.json"
+echo "CBM BASIC snippets (MEGA65 set) → $DEST"
 echo "In a .m65 buffer, type red / graphic / 10print then Tab."

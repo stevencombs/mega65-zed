@@ -4,13 +4,26 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+M65TOOLS="${M65TOOLS:-$HOME/m65tools}"
+export PATH="$M65TOOLS:$HOME/.local/bin:/opt/homebrew/bin:$PATH"
 PETCAT="${PETCAT:-/opt/homebrew/bin/petcat}"
-ETHERLOAD="${ETHERLOAD:-$HOME/.retrocombs-m65/bin/etherload}"
 XMEGA65_APP="${XMEGA65_APP:-/Applications/xmega65.app}"
 LOAD_HEX="${CBM_MEGA65_LOAD:-2001}"
 
+find_m65tool() {
+  local name="$1"
+  local c
+  for c in "$M65TOOLS/$name" "$M65TOOLS/${name}.osx" "$(command -v "$name" 2>/dev/null || true)"; do
+    if [[ -n "$c" && -x "$c" ]]; then
+      echo "$c"
+      return 0
+    fi
+  done
+  return 1
+}
+
 usage() {
-  echo "usage: $(basename "$0") check|run|push|push-run [listing.m65]" >&2
+  echo "usage: $(basename "$0") check|run|push|push-run|push-xemu [listing.m65]" >&2
   exit 2
 }
 
@@ -88,33 +101,35 @@ case "$cmd" in
     tokenize "$dir" "$src" >/dev/null
     echo "Check OK. Review the listing; Push is your key, not Grok's."
     ;;
-  run)
+  run|push-xemu)
     prg="$(tokenize "$dir" "$src")"
     if [[ ! -d "$XMEGA65_APP" ]]; then
       echo "xmega65.app not found in /Applications." >&2
       exit 1
     fi
-    echo "Launching XEMU xmega65 with $prg"
+    echo "Pushing $prg into XEMU (xmega65 -prg)"
     open -na "$XMEGA65_APP" --args -prg "$prg"
     ;;
   push)
     prg="$(tokenize "$dir" "$src")"
-    if [[ ! -x "$ETHERLOAD" ]]; then
-      echo "etherload not found at $ETHERLOAD (run mega65zed-install.sh)." >&2
+    etherload="$(find_m65tool etherload || true)"
+    if [[ -z "$etherload" ]]; then
+      echo "etherload not found in $M65TOOLS (need etherload or etherload.osx)." >&2
       exit 1
     fi
-    echo "etherload (load, do not RUN)  $prg"
-    "$ETHERLOAD" "$prg"
+    echo "Network push via $etherload (load, do not RUN)"
+    "$etherload" "$prg"
     echo "On the MEGA65 you should be at READY. Type RUN if you want it to go."
     ;;
   push-run)
     prg="$(tokenize "$dir" "$src")"
-    if [[ ! -x "$ETHERLOAD" ]]; then
-      echo "etherload not found at $ETHERLOAD (run mega65zed-install.sh)." >&2
+    etherload="$(find_m65tool etherload || true)"
+    if [[ -z "$etherload" ]]; then
+      echo "etherload not found in $M65TOOLS (need etherload or etherload.osx)." >&2
       exit 1
     fi
-    echo "etherload -r  $prg"
-    "$ETHERLOAD" -r "$prg"
+    echo "Network push+run via $etherload -r"
+    "$etherload" -r "$prg"
     ;;
   *)
     usage

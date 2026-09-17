@@ -1,4 +1,4 @@
-name = "MEGA65 BASIC"
+name = "CBM BASIC"
 path_suffixes = ["m65"]
 line_comments = ["rem ", "REM "]
 tab_size = 2

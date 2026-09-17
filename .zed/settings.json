@@ -42,6 +42,6 @@
     "dock": "left"
   },
   "file_associations": {
-    "*.m65": "MEGA65 BASIC"
+    "*.m65": "CBM BASIC"
   }
 }

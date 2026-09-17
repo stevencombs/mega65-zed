@@ -17,10 +17,10 @@ MEGA65-only pieces stay: BASIC65 (`petcat -w65`, load `$2001`), `GRAPHIC`, Ether
 | Listing | **MEGA65 Dark** — navy paper (`#000080`), gold keywords, green cursor |
 | Chrome / Grok | Black glass, phosphor green (same as VIC-20 / C64) |
 | Font | Source Code Pro, autosave 1s |
-| Files | `.m65` → MEGA65 BASIC |
+| Files | `.m65` → **CBM BASIC** |
 | Check | `petcat -w65` → `export/<name>.prg` |
-| Run | XEMU `xmega65 -prg` |
-| Push | `etherload` (load, you type `RUN`) |
+| Run / Push to XEMU | `/Applications/xmega65.app` `-prg` |
+| Push | `~/m65tools/etherload` over Ethernet (load; you type `RUN`) |
 | Push+run | `etherload -r` (same as **Send to Hardware**) |
 
 Zed 1.20 Agent chat uses the listing paper. Leave it closed. **⌘⇧G** / **⌘J** toggles the bottom terminal. **task: spawn → Grok Build**.
@@ -46,8 +46,9 @@ Same verbs as VIC-20 / C64:
 | Task | What |
 |------|------|
 | **MEGA65: Check listing** | Tokenize BASIC65. No emulator, no Ethernet. |
-| **MEGA65: Run in XEMU** | Check, then `xmega65 -prg`. |
-| **MEGA65: Push** | `etherload` — programme is in memory; you `RUN`. |
+| **MEGA65: Run in XEMU** | Check, then inject PRG into `xmega65`. |
+| **MEGA65: Push to XEMU** | Same as Run in XEMU. |
+| **MEGA65: Push** | `~/m65tools/etherload` — in memory; you `RUN`. |
 | **MEGA65: Push+run** | `etherload -r`. |
 | **MEGA65: Send to Hardware** | Alias of Push+run (old name). |
 | **Grok Build** | Bottom TUI. |
@@ -62,9 +63,9 @@ MEGA65-only starters: `graphic` → `GRAPHIC 1,1`, `10print` → hello loop.
 
 ## Tools
 
-- **petcat -w65** — Homebrew VICE 3.10 on Apple Silicon. Filehost `~/.retrocombs-m65/bin/petcat` is Intel-only; the installer still places it for Intel Macs.
-- **etherload** — `~/.retrocombs-m65/bin/etherload` from [mega65-tools](https://github.com/MEGA65/mega65-tools). Extra flags (`--ntsc`, `--mount`, `-j`) remain available on the CLI.
-- **xmega65** — `/Applications/xmega65.app`. Optional `keymap.cfg` in this repo goes in the XEMU system folder.
+- **petcat -w65** — Homebrew VICE 3.10 on Apple Silicon.
+- **~/m65tools** — `etherload`, `m65`, `mega65_ftp` (unprefixed names; `.osx` binaries). On `PATH` for every Terminal via `~/.zshrc`. Extra flags (`--ntsc`, `--mount`, `-j`) stay on the CLI.
+- **xmega65** — `/Applications/xmega65.app`, also `~/.local/bin/xmega65`. Optional `keymap.cfg` in this repo goes in the XEMU system folder.
 
 `scripts/mega65.sh` is the same shape as CBM `vic20.sh` / `c64.sh`.
 
