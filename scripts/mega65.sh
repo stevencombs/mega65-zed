@@ -23,14 +23,14 @@ find_m65tool() {
 }
 
 usage() {
-  echo "usage: $(basename "$0") check|run|push|push-run|push-xemu [listing.m65]" >&2
+  echo "usage: $(basename "$0") check|run|push|push-run|push-xemu [listing.bas|.m65]" >&2
   exit 2
 }
 
 program_dir() {
   local f="${1:-}"
   if [[ -z "$f" || "$f" == *"\$ZED_FILE"* ]]; then
-    echo "Open a .m65 listing first." >&2
+    echo "Open a .bas or .m65 listing first." >&2
     exit 1
   fi
   [[ "$f" == /* ]] || f="$PWD/$f"
@@ -53,18 +53,20 @@ stem_of() {
 find_source() {
   local dir="$1"
   local stem="$2"
-  if [[ -f "$dir/src/${stem}.m65" ]]; then
-    echo "$dir/src/${stem}.m65"
-    return
-  fi
-  if [[ -f "$dir/${stem}.m65" ]]; then
-    echo "$dir/${stem}.m65"
-    return
-  fi
+  for ext in bas m65; do
+    if [[ -f "$dir/src/${stem}.${ext}" ]]; then
+      echo "$dir/src/${stem}.${ext}"
+      return
+    fi
+    if [[ -f "$dir/${stem}.${ext}" ]]; then
+      echo "$dir/${stem}.${ext}"
+      return
+    fi
+  done
   local hit
-  hit="$(ls "$dir"/src/*.m65 "$dir"/*.m65 2>/dev/null | head -1 || true)"
+  hit="$(ls "$dir"/src/*.bas "$dir"/src/*.m65 "$dir"/*.bas "$dir"/*.m65 2>/dev/null | head -1 || true)"
   if [[ -z "$hit" ]]; then
-    echo "No .m65 in $dir" >&2
+    echo "No .bas or .m65 in $dir" >&2
     exit 1
   fi
   echo "$hit"
