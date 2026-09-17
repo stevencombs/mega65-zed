@@ -1,15 +1,11 @@
 id = "mega65"
 name = "CBM BASIC (MEGA65)"
-version = "0.6.0"
+version = "0.6.1"
 schema_version = 1
 authors = ["retroCombs <steven@retrocombs.com>"]
 description = "MEGA65 BASIC65 in Zed: navy listing (boot screen), phosphor-green Grok chrome, PETSCII tokens, etherload and XEMU"
 repository = "https://github.com/stevencombs/mega65-zed"
 snippets = ["snippets/cbm basic.json"]
-
-[grammars.ini]
-repository = "https://github.com/justinmk/tree-sitter-ini"
-rev = "e4018b5176132b4f3c5d6e61cea383f42288d0f5"
 
 [theme]
 name = "MEGA65 Dark"
