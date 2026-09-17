@@ -103,12 +103,16 @@ case "$cmd" in
     ;;
   run|push-xemu)
     prg="$(tokenize "$dir" "$src")"
-    if [[ ! -d "$XMEGA65_APP" ]]; then
-      echo "xmega65.app not found in /Applications." >&2
+    xbin="$XMEGA65_APP/Contents/MacOS/xmega65"
+    if [[ ! -x "$xbin" ]]; then
+      echo "xmega65 not found at $xbin" >&2
       exit 1
     fi
-    echo "Pushing $prg into XEMU (xmega65 -prg)"
-    open -na "$XMEGA65_APP" --args -prg "$prg"
+    echo "Pushing $prg into XEMU (-besure -prg)"
+    pkill -x xmega65 2>/dev/null || true
+    sleep 0.3
+    arch -x86_64 "$xbin" -besure -prg "$prg" >/tmp/cbm-xmega65.log 2>&1 &
+    echo "XEMU started (log /tmp/cbm-xmega65.log)"
     ;;
   push)
     prg="$(tokenize "$dir" "$src")"
