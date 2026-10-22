@@ -1,0 +1,25 @@
+{
+  "grammars": [
+    {
+      "name": "commodore_basic",
+      "camelcase": "CommodoreBasic",
+      "scope": "source.commodore-basic",
+      "file-types": ["bas", "b65", "m65"],
+      "injection-regex": "^(commodore[-_ ]?basic|basic65)$"
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": "Tree-sitter grammar for Commodore BASIC 2.0 and MEGA65 BASIC65",
+    "authors": [
+      {
+        "name": "retroCombs",
+        "email": "steven@retrocombs.com"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/stevencombs/mega65-zed"
+    }
+  }
+}

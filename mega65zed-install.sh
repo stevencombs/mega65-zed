@@ -1,201 +1,127 @@
-#!/bin/bash
-# mega65zed-install.sh - retroCombs MEGA65-ZED Environment Setup for Mac
+#!/usr/bin/env bash
+# Install petcat and (when a build exists) mega65-tools for macOS and Linux.
+# Tools go in ~/.retrocombs-m65/bin. Does not install Homebrew, Zed, or Rosetta.
+set -euo pipefail
 
-echo "================================================="
-echo " retroCombs MEGA65-ZED Environment Setup for Mac"
-echo " Version: 1.0.4"
-echo "================================================="
-echo "This script will install and configure the following tools:"
-echo "  1. Zed Editor - The lightning-fast text editor (if not installed)."
-echo "  2. etherload (from mega65-tools GitHub) - For sending PRG files to hardware."
-echo "  3. petcat (from MEGA65 Filehost) - For tokenizing BASIC65 text files."
-echo "  4. xmega65 (Symlink) - Connects your existing XEMU emulator to Zed."
-echo "  5. Homebrew / 7zip (If required) - To extract the latest MEGA65 archives."
-echo ""
-echo "All tools will be safely isolated in: $HOME/.retrocombs-m65/bin"
-echo "================================================="
-echo ""
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/cbm-tools.sh
+source "$ROOT/scripts/cbm-tools.sh"
 
-# 0. Check for and install Zed Editor
-echo "Checking for Zed Editor..."
-if [ ! -d "/Applications/Zed.app" ] && [ ! -d "$HOME/Applications/Zed.app" ] && ! command -v zed &> /dev/null; then
-    echo "Zed Editor not found. Installing the latest version..."
-    curl -f https://zed.dev/install.sh | sh
-    echo "✅ Zed Editor installed successfully!"
+BIN="${CBM_BIN_DIR:-$HOME/.retrocombs-m65/bin}"
+PETCAT_URL="${PETCAT_URL:-https://files.mega65.org/files/p/petcat-20230619_6Veruh.zip}"
+
+echo "retroCombs Commodore BASIC tools  (extension 0.7.0)"
+echo "OS: $(uname -s) $(uname -m)"
+echo "Bin: $BIN"
+echo "This does not install Zed, Homebrew, or Rosetta."
+echo
+
+mkdir -p "$BIN"
+cp "$ROOT/scripts/mega65.sh" "$BIN/mega65.sh"
+cp "$ROOT/scripts/cbm-tools.sh" "$BIN/cbm-tools.sh"
+chmod +x "$BIN/mega65.sh" "$BIN/cbm-tools.sh"
+echo "Installed mega65.sh and cbm-tools.sh"
+
+echo
+echo "petcat from $PETCAT_URL"
+tmp="$(mktemp -d)"
+if ! curl -fL --max-time 180 -o "$tmp/petcat.zip" "$PETCAT_URL"; then
+  echo "Could not download petcat." >&2
+  rm -rf "$tmp"
+  exit 1
+fi
+if ! cbm_install_petcat_from_zip "$tmp/petcat.zip" "$BIN/petcat"; then
+  rm -rf "$tmp"
+  exit 1
+fi
+rm -rf "$tmp"
+echo "Installed $BIN/petcat"
+
+echo
+os_tag="$(cbm_host_os_tag || true)"
+filehost_id="$(cbm_m65tools_filehost_id || true)"
+tool_url="${M65TOOLS_URL:-}"
+if [[ -z "$tool_url" && -n "$filehost_id" ]]; then
+  echo "mega65-tools from https://files.mega65.org?id=${filehost_id}"
+  echo "That link is the filehost page. The active .7z is downloaded from it."
+  tool_url="$(cbm_filehost_m65tools_url "$filehost_id" || true)"
+fi
+if [[ -z "$tool_url" && -n "$os_tag" ]]; then
+  echo "Filehost did not return an archive. Trying the GitHub mega65-tools release."
+  tool_url="$(cbm_github_m65tools_urls | cbm_pick_m65tools_url "$os_tag" || true)"
+fi
+if [[ -z "$tool_url" ]]; then
+  echo "No mega65-tools archive for this OS."
+  echo "Linux:  https://files.mega65.org?id=m65tools-linux-dev  (x86_64 .7z; no aarch64 build)"
+  echo "macOS:  https://files.mega65.org?id=m65tools-macos-dev  (universal .7z)"
+  echo "Set M65TOOLS_URL to a .7z or .zip, or copy etherload into $BIN."
+  echo "Unpacking .7z needs 7z or 7zz."
 else
-    echo "✅ Zed Editor is already installed."
-fi
-echo ""
-
-# 1. Setup the portable tools directory
-M65_DIR="$HOME/.retrocombs-m65/bin"
-echo "Creating tools directory at $M65_DIR..."
-mkdir -p "$M65_DIR"
-
-# 2. Fetch mega65-tools (etherload) from GitHub
-echo "Fetching the latest mega65-tools for Mac from GitHub..."
-
-# Try GitHub API first (checking recent releases, ignoring specific tags)
-ASSET_URL=$(curl -s https://api.github.com/repos/MEGA65/mega65-tools/releases | grep -i "browser_download_url" | grep -iE "mac|darwin" | grep -iE "\.tar\.gz|\.zip|\.7z" | head -n 1 | cut -d '"' -f 4 | tr -d '[:space:]')
-
-# Fallback to HTML scraping if API rate limit is hit
-if [ -z "$ASSET_URL" ]; then
-    echo "API empty. Trying direct HTML scrape to bypass rate limits..."
-    RELEASE_PATH=$(curl -s https://github.com/MEGA65/mega65-tools/releases | grep -o 'href="[^"]*mac[^"]*\.\(zip\|tar\.gz\|7z\)"' | head -n 1 | cut -d '"' -f 2)
-    if [ -n "$RELEASE_PATH" ]; then
-        ASSET_URL="https://github.com$RELEASE_PATH"
-    fi
-fi
-
-if [ -n "$ASSET_URL" ]; then
-    echo "Downloading etherload archive from: $ASSET_URL"
-    mkdir -p "$M65_DIR/tmp_tools"
-    curl -L -o "$M65_DIR/tmp_tools/m65tools-mac.archive" "$ASSET_URL"
-    
-    echo "Extracting etherload..."
-    # Detect file type based on URL and extract accordingly
-    if echo "$ASSET_URL" | grep -qi "\.zip"; then
-        unzip -o -q "$M65_DIR/tmp_tools/m65tools-mac.archive" -d "$M65_DIR/tmp_tools" 2>/dev/null
-    elif echo "$ASSET_URL" | grep -qi "\.7z"; then
-        SEVENZ_CMD=""
-        if command -v 7zz &> /dev/null; then SEVENZ_CMD="7zz";
-        elif command -v 7z &> /dev/null; then SEVENZ_CMD="7z";
+  echo "mega65-tools archive: $tool_url"
+  ttmp="$(mktemp -d)"
+  archive="$ttmp/$(basename "${tool_url%%\?*}")"
+  if curl -fL --max-time 300 -o "$archive" "$tool_url"; then
+    if cbm_extract_archive "$archive" "$ttmp/out"; then
+      cbm_install_one() {
+        local dest="$1"
+        shift
+        if cbm_install_tree_tool "$ttmp/out" "$BIN/$dest" "$@"; then
+          echo "Installed $BIN/$dest"
+          return 0
         fi
-        
-        if [ -z "$SEVENZ_CMD" ]; then
-            echo "Terminal needs '7zz' to extract this file. Installing sevenzip via Homebrew..."
-            if ! command -v brew &> /dev/null; then
-                echo "Installing Homebrew first..."
-                /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-            fi
-            brew install sevenzip
-            SEVENZ_CMD="7zz"
-        fi
-        $SEVENZ_CMD x "$M65_DIR/tmp_tools/m65tools-mac.archive" -o"$M65_DIR/tmp_tools" -y > /dev/null 2>&1
+        return 1
+      }
+      cbm_install_one etherload etherload etherload.osx || \
+        echo "No usable etherload (etherload.prg is skipped; an ELF for another CPU is skipped)."
+      cbm_install_one m65 m65 m65.osx || true
+      cbm_install_one mega65_ftp mega65_ftp mega65_ftp.osx || true
+      cbm_install_one bit2core bit2core bit2core.osx || true
+      cbm_install_one bit2mcs bit2mcs bit2mcs.osx || true
+      cbm_install_one romdiff romdiff romdiff.osx || true
     else
-        tar -xzf "$M65_DIR/tmp_tools/m65tools-mac.archive" -C "$M65_DIR/tmp_tools" 2>/dev/null || tar -xf "$M65_DIR/tmp_tools/m65tools-mac.archive" -C "$M65_DIR/tmp_tools" 2>/dev/null
+      echo "Could not extract mega65-tools. etherload was not installed."
     fi
-    
-    # Find etherload (case insensitive, allowing for possible suffixes like _mac)
-    ETHERLOAD_BIN=$(find "$M65_DIR/tmp_tools" -type f -iname "*etherload*" | head -n 1)
-    if [ -n "$ETHERLOAD_BIN" ]; then
-        mv "$ETHERLOAD_BIN" "$M65_DIR/etherload"
-    fi
-    
-    if [ -f "$M65_DIR/etherload" ]; then
-        chmod +x "$M65_DIR/etherload"
-        # Clear macOS Gatekeeper Quarantine and ad-hoc sign for Apple Silicon execution
-        xattr -d com.apple.quarantine "$M65_DIR/etherload" 2>/dev/null
-        codesign --force --deep -s - "$M65_DIR/etherload" 2>/dev/null
-        echo "✅ etherload installed successfully!"
-    else
-        echo "❌ Failed to locate etherload inside the downloaded archive."
-        echo "--- Debug Info: Contents of extracted archive ---"
-        ls -laR "$M65_DIR/tmp_tools"
-        echo "-------------------------------------------------"
-    fi
-    
-    # Clean up temp folder
-    rm -rf "$M65_DIR/tmp_tools"
-else
-    echo "❌ Could not auto-fetch mega65-tools. GitHub URL parsing failed."
+  else
+    echo "Could not download mega65-tools. etherload was not installed."
+  fi
+  rm -rf "$ttmp"
 fi
 
-# 3. Fetch Standalone petcat from the MEGA65 Filehost
-echo ""
-echo "Fetching standalone petcat..."
-PETCAT_URL="https://files.mega65.org/files/p/petcat-20230619_6Veruh.zip"
-mkdir -p "$M65_DIR/tmp_petcat"
-curl -L -o "$M65_DIR/tmp_petcat/petcat.zip" "$PETCAT_URL"
-
-if [ -f "$M65_DIR/tmp_petcat/petcat.zip" ]; then
-    echo "Extracting petcat..."
-    unzip -o -q "$M65_DIR/tmp_petcat/petcat.zip" -d "$M65_DIR/tmp_petcat"
-    
-    # The zip contains mac, linux, and win versions. Find the mac one specifically.
-    MAC_PETCAT=$(find "$M65_DIR/tmp_petcat" -type f -name "petcat" | grep -i "/mac" | head -n 1)
-    
-    # Fallback if the folder structure is flat or named differently
-    if [ -z "$MAC_PETCAT" ]; then
-        MAC_PETCAT=$(find "$M65_DIR/tmp_petcat" -type f -name "petcat" | grep -iv "/linux" | grep -iv "/win" | head -n 1)
-    fi
-
-    if [ -n "$MAC_PETCAT" ]; then
-        mv "$MAC_PETCAT" "$M65_DIR/petcat"
-    fi
-    
-    # Clean up temp folder
-    rm -rf "$M65_DIR/tmp_petcat"
-    
-    if [ -f "$M65_DIR/petcat" ]; then
-        chmod +x "$M65_DIR/petcat"
-        # Clear macOS Gatekeeper Quarantine
-        xattr -d com.apple.quarantine "$M65_DIR/petcat" 2>/dev/null
-        echo "✅ petcat installed successfully!"
-    else
-        echo "❌ Failed to locate the Mac version of petcat inside the zip."
-    fi
+echo
+if [[ -x /Applications/xmega65.app/Contents/MacOS/xmega65 ]]; then
+  ln -sfn "/Applications/xmega65.app/Contents/MacOS/xmega65" "$BIN/xmega65"
+  echo "Linked $BIN/xmega65 → /Applications/xmega65.app"
+elif [[ -x "$HOME/Applications/xmega65.app/Contents/MacOS/xmega65" ]]; then
+  ln -sfn "$HOME/Applications/xmega65.app/Contents/MacOS/xmega65" "$BIN/xmega65"
+  echo "Linked $BIN/xmega65 → ~/Applications/xmega65.app"
 else
-    echo "❌ Failed to download petcat. The direct link may have expired."
+  echo "xmega65.app not found. XEMU tasks work once XMEGA65 or XMEGA65_APP is set."
 fi
 
-# 4. Handle the xmega65 Application Bundle
-echo ""
-if [ -d "/Applications/xmega65.app" ]; then
-    echo "Found xmega65 in /Applications. Creating symlink..."
-    ln -sf "/Applications/xmega65.app/Contents/MacOS/xmega65" "$M65_DIR/xmega65"
-elif [ -d "$HOME/Applications/xmega65.app" ]; then
-    echo "Found xmega65 in User Applications. Creating symlink..."
-    ln -sf "$HOME/Applications/xmega65.app/Contents/MacOS/xmega65" "$M65_DIR/xmega65"
-else
-    echo "Note: xmega65.app not found. Zed tasks using XEMU won't work until installed."
+echo
+cbm_install_path_snippets
+echo "PATH snippet is in the shell rc file under ~/.retrocombs-m65/bin (prepended)."
+echo "Open a new terminal, or: export PATH=\"\$HOME/.retrocombs-m65/bin:\$PATH\""
+
+echo
+if [[ ! -x "$BIN/petcat" ]]; then
+  echo "petcat is missing." >&2
+  exit 1
 fi
-
-# 5. Add the new tools directory to the user's ZSH PATH
-ZSHRC="$HOME/.zshrc"
-if ! grep -q "$M65_DIR" "$ZSHRC" 2>/dev/null; then
-    echo "Adding $M65_DIR to your PATH in .zshrc..."
-    echo "" >> "$ZSHRC"
-    echo "# retroCombs MEGA65-ZED Tools" >> "$ZSHRC"
-    echo "export PATH=\"\$PATH:$M65_DIR\"" >> "$ZSHRC"
+if "$BIN/petcat" -k </dev/null 2>&1 | grep -qi petcat; then
+  echo "petcat responds."
 else
-    echo "Tools directory is already in your .zshrc PATH."
+  echo "petcat is installed. '-k' did not print a version banner; trying a tokenize later will tell you if it runs."
 fi
-
-echo ""
-echo "=========================================================="
-echo " VERIFYING INSTALLATION..."
-echo "=========================================================="
-
-# 1. Test petcat (using </dev/null to prevent terminal hang)
-if [ -x "$M65_DIR/petcat" ] && "$M65_DIR/petcat" < /dev/null 2>&1 | grep -qi "petcat"; then
-    echo "✅ petcat is installed and responding."
-elif [ -x "$M65_DIR/petcat" ]; then
-    echo "✅ petcat is installed and executable."
+if [[ -x "$BIN/etherload" ]] && "$BIN/etherload" -h </dev/null 2>&1 | grep -qi etherload; then
+  echo "etherload responds (-h)."
+elif [[ -x "$BIN/etherload" ]]; then
+  echo "etherload is installed but did not print help."
 else
-    echo "❌ petcat failed to run."
+  echo "etherload is not installed. Push to hardware needs it. Emulator tasks do not."
+  if [[ "$(uname -s)" == "Linux" && "$(cbm_host_cpu)" != "x86_64" ]]; then
+    echo "The Linux filehost archive is x86_64 only."
+  fi
 fi
-
-# 2. Test etherload (using </dev/null to prevent terminal hang)
-if [ -x "$M65_DIR/etherload" ] && "$M65_DIR/etherload" -h < /dev/null 2>&1 | grep -qi "etherload"; then
-    echo "✅ etherload is installed and responding."
-elif [ -x "$M65_DIR/etherload" ]; then
-    echo "✅ etherload is installed and executable."
-else
-    echo "❌ etherload failed to run."
-fi
-
-# 3. Test xmega65 symlink
-if [ -L "$M65_DIR/xmega65" ] && [ -x "$M65_DIR/xmega65" ]; then
-    echo "✅ xmega65 symlink is valid and points to the app."
-else
-    echo "⚠️  xmega65 not found. (Emulator tasks in Zed will fail until installed)"
-fi
-
-echo ""
-echo "=========================================================="
-echo " SETUP COMPLETE!"
-echo "=========================================================="
-echo "IMPORTANT: Run 'source ~/.zshrc' or completely restart"
-echo "your terminal/Zed for the PATH changes to take effect."
-echo "=========================================================="
+echo
+echo "Done. In Zed, install this folder as a dev extension, then open a .bas or .b65 file."

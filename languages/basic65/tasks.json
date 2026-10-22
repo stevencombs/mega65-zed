@@ -1,0 +1,44 @@
+[
+  {
+    "label": "CBM: Check listing",
+    "command": "$HOME/.retrocombs-m65/bin/mega65.sh",
+    "args": ["check", "$ZED_FILE"],
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "MEGA65: Run in XEMU",
+    "command": "$HOME/.retrocombs-m65/bin/mega65.sh",
+    "args": ["run", "$ZED_FILE"],
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "MEGA65: Push to XEMU",
+    "command": "$HOME/.retrocombs-m65/bin/mega65.sh",
+    "args": ["push-xemu", "$ZED_FILE"],
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "MEGA65: Push",
+    "command": "$HOME/.retrocombs-m65/bin/mega65.sh",
+    "args": ["push", "$ZED_FILE"],
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "MEGA65: Push+run",
+    "command": "$HOME/.retrocombs-m65/bin/mega65.sh",
+    "args": ["push-run", "$ZED_FILE"],
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "MEGA65: Send to Hardware",
+    "command": "$HOME/.retrocombs-m65/bin/mega65.sh",
+    "args": ["push-run", "$ZED_FILE"],
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  }
+]

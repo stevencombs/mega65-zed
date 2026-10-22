@@ -3,3 +3,8 @@ build.prg
 export/*.prg
 export/*.d64
 export/*.d81
+node_modules/
+build/
+*.wasm
+grammars/**/build/
+**/.tree-sitter/

@@ -1,0 +1,420 @@
+================
+BASIC 2.0 listing
+================
+
+10 rem basic 2.0 sample
+20 print "{clr}{wht}hello {rght}"
+30 for i=1 to 10 step 2
+40 print i;"{red}"
+50 next i
+60 if a<>1 then goto 20
+70 data 1,2,"a:b"
+80 a$="x":b%=1
+90 let n=1.5e+3
+100 poke 53280,peek(53281) and 15
+110 print chr$(147);left$("ab",1)
+120 go to 10
+130 total=1
+140 ?"shortcut"
+
+---
+
+(source_file
+  (line
+    (line_number)
+    (statements
+      (statement
+        (rem_statement))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (string
+          (petscii_code)
+          (petscii_code)
+          (string_content)
+          (petscii_code)))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (identifier)
+        (operator)
+        (number)
+        (keyword)
+        (number)
+        (keyword)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (identifier)
+        (punctuation)
+        (string
+          (petscii_code)))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (identifier))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (identifier)
+        (operator)
+        (number)
+        (keyword)
+        (keyword)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (number)
+        (punctuation)
+        (number)
+        (punctuation)
+        (string
+          (string_content)))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (identifier)
+        (operator)
+        (string
+          (string_content)))
+      (punctuation)
+      (statement
+        (identifier)
+        (operator)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (identifier)
+        (operator)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (number)
+        (punctuation)
+        (keyword)
+        (punctuation)
+        (number)
+        (punctuation)
+        (keyword)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (keyword)
+        (punctuation)
+        (number)
+        (punctuation)
+        (punctuation)
+        (keyword)
+        (punctuation)
+        (string
+          (string_content))
+        (punctuation)
+        (number)
+        (punctuation))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (keyword)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (identifier)
+        (operator)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (string
+          (string_content))))))
+
+================
+No space after the line number
+================
+
+10PRINT"{home}"
+
+---
+
+(source_file
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (string
+          (petscii_code))))))
+
+================
+BASIC65 listing
+================
+
+10 rem basic65
+20 speed 3:graphic 1,1
+30 color 2:cursor 1,1:print "{clr}{swlc}hi"
+40 do:loop until 0
+50 if a=1 then print "y" else print "n"
+60 n=$c000:flags=%1010
+70 directory
+
+---
+
+(source_file
+  (line
+    (line_number)
+    (statements
+      (statement
+        (rem_statement))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (basic65_keyword)
+        (number))
+      (punctuation)
+      (statement
+        (basic65_keyword)
+        (number)
+        (punctuation)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (basic65_keyword)
+        (number))
+      (punctuation)
+      (statement
+        (basic65_keyword)
+        (number)
+        (punctuation)
+        (number))
+      (punctuation)
+      (statement
+        (keyword)
+        (string
+          (petscii_code)
+          (petscii_code)
+          (string_content)))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (basic65_keyword))
+      (punctuation)
+      (statement
+        (basic65_keyword)
+        (basic65_keyword)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (identifier)
+        (operator)
+        (number)
+        (keyword)
+        (keyword)
+        (string
+          (string_content))
+        (basic65_keyword)
+        (keyword)
+        (string
+          (string_content)))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (identifier)
+        (operator)
+        (number))
+      (punctuation)
+      (statement
+        (identifier)
+        (operator)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (basic65_keyword)))))
+
+================
+MEGA65 color demo
+================
+
+10 rem === zed + mega65 rainbow demo ===
+20 speed 3 : print chr$(147):poke 53297,peek(53297) and 127
+30 for c=1 to 16
+40 color c
+50 cursor rnd(1)*28,rnd(1)*20:print " >hello retrocombians< "
+60 sound 1,950+c*92,12
+70 for w=1 to 95:next w
+80 next
+90 goto 30
+
+---
+
+(source_file
+  (line
+    (line_number)
+    (statements
+      (statement
+        (rem_statement))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (basic65_keyword)
+        (number))
+      (punctuation)
+      (statement
+        (keyword)
+        (keyword)
+        (punctuation)
+        (number)
+        (punctuation))
+      (punctuation)
+      (statement
+        (keyword)
+        (number)
+        (punctuation)
+        (keyword)
+        (punctuation)
+        (number)
+        (punctuation)
+        (keyword)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (identifier)
+        (operator)
+        (number)
+        (keyword)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (basic65_keyword)
+        (identifier))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (basic65_keyword)
+        (keyword)
+        (punctuation)
+        (number)
+        (punctuation)
+        (operator)
+        (number)
+        (punctuation)
+        (keyword)
+        (punctuation)
+        (number)
+        (punctuation)
+        (operator)
+        (number))
+      (punctuation)
+      (statement
+        (keyword)
+        (string
+          (string_content)))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (basic65_keyword)
+        (number)
+        (punctuation)
+        (number)
+        (operator)
+        (identifier)
+        (operator)
+        (number)
+        (punctuation)
+        (number))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (identifier)
+        (operator)
+        (number)
+        (keyword)
+        (number))
+      (punctuation)
+      (statement
+        (keyword)
+        (identifier))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (number)))))
+
+================
+Unclosed string and blank line
+================
+
+10 print "still editing
+
+30 end
+
+---
+
+(source_file
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)
+        (string
+          (string_content)))))
+  (line
+    (line_number)
+    (statements
+      (statement
+        (keyword)))))
