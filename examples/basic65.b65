@@ -1,0 +1,7 @@
+10 rem basic65
+20 speed 3:graphic 1,1
+30 color 2:cursor 1,1:print "{clr}{swlc}hi"
+40 do:loop until 0
+50 if a=1 then print "y" else print "n"
+60 n=$c000:flags=%1010
+70 directory
