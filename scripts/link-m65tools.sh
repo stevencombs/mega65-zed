@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
-# Unprefixed names in ~/m65tools (etherload, m65, …) and xmega65 on PATH.
+# Unprefixed names (etherload, m65, ...) next to the .osx binaries,
+# and an xmega65 symlink when the Mac app bundle is installed.
 set -euo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=cbm-tools.sh
+source "$HERE/cbm-tools.sh"
+
 TOOLS="${M65TOOLS:-$HOME/m65tools}"
 if [[ ! -d "$TOOLS" ]]; then
-  echo "No $TOOLS directory." >&2
+  echo "No $TOOLS directory. Unpack mega65-tools there, or set M65TOOLS." >&2
   exit 1
 fi
+
 cd "$TOOLS"
 for f in etherload m65 mega65_ftp bit2core bit2mcs romdiff; do
   if [[ -x "${f}.osx" ]]; then
@@ -13,10 +20,15 @@ for f in etherload m65 mega65_ftp bit2core bit2mcs romdiff; do
     echo "  $f → ${f}.osx"
   fi
 done
-mkdir -p "$HOME/.local/bin"
+
+BIN="${CBM_BIN_DIR:-$HOME/.retrocombs-m65/bin}"
+mkdir -p "$BIN"
 if [[ -x /Applications/xmega65.app/Contents/MacOS/xmega65 ]]; then
-  ln -sfn /Applications/xmega65.app/Contents/MacOS/xmega65 "$HOME/.local/bin/xmega65"
+  ln -sfn /Applications/xmega65.app/Contents/MacOS/xmega65 "$BIN/xmega65"
   echo "  xmega65 → /Applications/xmega65.app"
+elif [[ -x "$HOME/Applications/xmega65.app/Contents/MacOS/xmega65" ]]; then
+  ln -sfn "$HOME/Applications/xmega65.app/Contents/MacOS/xmega65" "$BIN/xmega65"
+  echo "  xmega65 → ~/Applications/xmega65.app"
 fi
-echo "Add to PATH (already in chezmoi dot_zshrc):  export PATH=\"\$HOME/m65tools:\$PATH\""
-echo "New shells pick it up. This shell:  export PATH=\"$TOOLS:\$PATH\""
+echo "Discovery also checks $TOOLS without these links."
+echo "This shell:  export PATH=\"$BIN:\$PATH\""
