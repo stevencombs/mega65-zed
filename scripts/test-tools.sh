@@ -76,6 +76,33 @@ st=0
 printf '' | cbm_pick_m65tools_url macos >/dev/null 2>&1 || st=$?
 assert_eq "$st" "1" "no asset is an error"
 
+detail='[{"state":"OK","filename":"m65tools-develo-211-44c63d-linux.7z","location":"..\/files\/m\/m65tools-develo-211-44c63d-linux_ksNzHc.7z"}]'
+got="$(printf '%s' "$detail" | cbm_filehost_detail_url)"
+assert_eq "$got" "https://files.mega65.org/files/m/m65tools-develo-211-44c63d-linux_ksNzHc.7z" "filehost location becomes a direct URL"
+st=0
+printf '%s' '[{"state":"EMPTY","location":null}]' | cbm_filehost_detail_url >/dev/null 2>&1 || st=$?
+assert_eq "$st" "1" "filehost miss is an error"
+
+case "$(cbm_host_cpu)" in
+  x86_64) other_machine=183 ;;
+  aarch64) other_machine=62 ;;
+  *) other_machine="" ;;
+esac
+if [[ -n "$other_machine" ]]; then
+  archtmp="$(mktemp -d)"
+  python3 -c 'import sys; m=int(sys.argv[2]); open(sys.argv[1],"wb").write(b"\x7fELF\x02\x01"+b"\x00"*12+bytes([m & 255,(m >> 8) & 255])+b"\x00"*42)' \
+    "$archtmp/other.elf" "$other_machine"
+  mkdir -p "$archtmp/tree"
+  cp "$archtmp/other.elf" "$archtmp/tree/etherload"
+  chmod +x "$archtmp/tree/etherload"
+  st=0
+  cbm_install_tree_tool "$archtmp/tree" "$archtmp/not-ether" etherload >/tmp/cbm-arch.err 2>&1 || st=$?
+  assert_eq "$st" "1" "refuses an etherload built for the other CPU"
+  [[ ! -e "$archtmp/not-ether" ]]
+  rm -rf "$archtmp"
+  echo "ok wrong-CPU etherload was not installed"
+fi
+
 WORK="$(mktemp -d)"
 export HOME="$WORK/home"
 export CBM_BIN_DIR="$WORK/bin"
@@ -453,5 +480,21 @@ env -u CBM_BIN_DIR -u M65TOOLS -u PETCAT -u XMEGA65 -u ETHERLOAD \
 grep -q 'retrocombs mega65' "$INST_HOME/.bashrc"
 "$INST_HOME/.retrocombs-m65/bin/petcat" -k </dev/null | grep -qi 'v65'
 echo "ok installer (temp HOME) put petcat and the scripts on bashrc"
+
+if [[ ! -x "$INST_HOME/.retrocombs-m65/bin/etherload" ]]; then
+  echo "FAIL installer did not install etherload" >&2
+  exit 1
+fi
+"$INST_HOME/.retrocombs-m65/bin/etherload" -h </dev/null >"$WORK/etherload-help.txt" 2>&1
+grep -q 'Ethernet Loading Tool' "$WORK/etherload-help.txt"
+grep -q -- '--help' "$WORK/etherload-help.txt"
+echo "ok installed etherload -h prints usage"
+found="$(
+  unset ETHERLOAD
+  unset M65TOOLS
+  HOME="$INST_HOME" CBM_BIN_DIR="$INST_HOME/.retrocombs-m65/bin" PATH="/usr/bin:/bin" \
+    cbm_find_etherload
+)"
+assert_eq "$found" "$INST_HOME/.retrocombs-m65/bin/etherload" "discovery finds the installed etherload"
 
 echo "all tool tests ok"

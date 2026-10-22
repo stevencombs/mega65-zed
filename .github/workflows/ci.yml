@@ -19,5 +19,19 @@ jobs:
           node-version: "22"
       - name: Tree-sitter grammar and highlight queries
         run: ./scripts/check-grammar.sh
+      - name: Install 7-Zip
+        run: |
+          if command -v 7z >/dev/null || command -v 7zz >/dev/null; then
+            exit 0
+          fi
+          if command -v apt-get >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y p7zip-full
+          elif command -v brew >/dev/null; then
+            brew install sevenzip
+          else
+            echo "no package manager for 7z" >&2
+            exit 1
+          fi
       - name: Tool discovery and petcat smoke test
         run: ./scripts/test-tools.sh

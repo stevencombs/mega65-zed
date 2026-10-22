@@ -46,7 +46,10 @@ The installer does **not** install Homebrew, Zed, or Rosetta, and it does not ed
 What it downloads:
 
 - **petcat** from the pinned MEGA65 zip `petcat-20230619`. The binary is chosen by OS and CPU: `macOS-arm`, `macOS-intel`, or `Linux` (x86_64). Linux aarch64 is not in that zip. Install petcat yourself and set `PETCAT`.
-- **mega65-tools** (`etherload`, and `m65` / `mega65_ftp` when the archive has them). The script asks GitHub for `MEGA65/mega65-tools` releases and picks the **highest build number** for your OS. `releases/latest` is not a usable tag (the published tag is a prerelease, and an older build is listed first). Set `M65TOOLS_URL` to override. As of this writing that tag has macOS `.7z` assets only. On Linux, copy `etherload` into `~/.retrocombs-m65/bin` or point `ETHERLOAD` at it. Extracting `.7z` needs `7z` or `7zz` already installed.
+- **mega65-tools** (`etherload`, `m65`, `mega65_ftp`, `bit2core`, `bit2mcs`, `romdiff`). The links below are filehost pages, not the archive itself. The installer asks that page for its active file and downloads the `.7z`:
+  - Linux: [files.mega65.org?id=m65tools-linux-dev](https://files.mega65.org?id=m65tools-linux-dev). The binaries are x86_64 ELF, named `etherload`, `m65`, and so on. There is no aarch64 build in that archive.
+  - macOS: [files.mega65.org?id=m65tools-macos-dev](https://files.mega65.org?id=m65tools-macos-dev). The binaries are universal (Apple Silicon and Intel), named `etherload.osx` and so on. They are installed as `etherload` in `~/.retrocombs-m65/bin`.
+  The hashed filename changes when a new build is published. The `id` does not, so the installer stays on the current build. Set `M65TOOLS_URL` to a `.7z` or `.zip` to pin one. If the filehost lookup fails, the installer falls back to the highest-numbered asset on the GitHub `CI-development-latest` release. Extracting `.7z` needs `7z` or `7zz` already installed. `etherload` is then found by the same search as the other tools, starting at `~/.retrocombs-m65/bin`.
 
 `etherload.prg` is a BASIC program, not the tool, and is never installed.
 

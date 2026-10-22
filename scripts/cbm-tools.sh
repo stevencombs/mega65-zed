@@ -302,6 +302,85 @@ cbm_github_m65tools_urls() {
   printf '%s\n' "$body" | grep -o 'https://[^"[:space:]]*m65tools[^"[:space:]]*' || true
 }
 
+# Stable filehost pages. They are HTML, not the archive. The active file
+# is whatever readfiledetail.php returns for that id.
+cbm_m65tools_filehost_id() {
+  case "$(uname -s)" in
+    Darwin) printf '%s\n' "m65tools-macos-dev" ;;
+    Linux) printf '%s\n' "m65tools-linux-dev" ;;
+    *) return 1 ;;
+  esac
+}
+
+cbm_filehost_absolute_url() {
+  local location="$1"
+  case "$location" in
+    https://*|http://*) printf '%s\n' "$location" ;;
+    ../*) printf '%s\n' "https://files.mega65.org/${location#../}" ;;
+    /*) printf '%s\n' "https://files.mega65.org${location}" ;;
+    *) printf '%s\n' "https://files.mega65.org/${location}" ;;
+  esac
+}
+
+# Read readfiledetail.php JSON on stdin. Print the direct archive URL.
+cbm_filehost_detail_url() {
+  local body state location
+  body="$(cat)"
+  state="$(printf '%s' "$body" | sed -n 's/.*"state"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1)"
+  location="$(printf '%s' "$body" | sed -n 's/.*"location"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1)"
+  # PHP json_encode escapes slashes as \/.
+  location="${location//\\/}"
+  if [[ "$state" != "OK" || -z "$location" || "$location" == "null" ]]; then
+    return 1
+  fi
+  cbm_filehost_absolute_url "$location"
+}
+
+cbm_filehost_m65tools_url() {
+  local id="$1" body url
+  body="$(curl -fsSL --max-time 60 -A "mega65-zed" -X POST \
+    --data-urlencode "fileid=${id}" \
+    "https://files.mega65.org/php/readfiledetail.php" || true)"
+  url="$(printf '%s' "$body" | cbm_filehost_detail_url || true)"
+  if [[ -z "$url" ]]; then
+    echo "Filehost has no active archive for id ${id}." >&2
+    echo "The page https://files.mega65.org?id=${id} is HTML; the installer reads the active file from it." >&2
+    return 1
+  fi
+  printf '%s\n' "$url"
+}
+
+cbm_host_cpu() {
+  case "$(uname -m)" in
+    x86_64|amd64) printf '%s\n' "x86_64" ;;
+    aarch64|arm64) printf '%s\n' "aarch64" ;;
+    *) printf '%s\n' "other" ;;
+  esac
+}
+
+# Print x86_64 or aarch64 for an ELF file. Return 1 if it is not an ELF.
+cbm_elf_cpu() {
+  local f="$1" mag data lo hi mach
+  command -v od >/dev/null 2>&1 || return 1
+  [[ -f "$f" ]] || return 1
+  mag="$(od -An -t x1 -N 4 "$f" 2>/dev/null | tr -d ' \n\t')"
+  [[ "$mag" == "7f454c46" ]] || return 1
+  data="$(od -An -t u1 -j 5 -N 1 "$f" 2>/dev/null | tr -d ' \n\t')"
+  if [[ "$data" == "1" ]]; then
+    lo="$(od -An -t u1 -j 18 -N 1 "$f" | tr -d ' \n\t')"
+    hi="$(od -An -t u1 -j 19 -N 1 "$f" | tr -d ' \n\t')"
+  else
+    hi="$(od -An -t u1 -j 18 -N 1 "$f" | tr -d ' \n\t')"
+    lo="$(od -An -t u1 -j 19 -N 1 "$f" | tr -d ' \n\t')"
+  fi
+  mach=$((${lo:-0} + ${hi:-0} * 256))
+  case "$mach" in
+    62) printf '%s\n' "x86_64" ;;
+    183) printf '%s\n' "aarch64" ;;
+    *) printf '%s\n' "other" ;;
+  esac
+}
+
 cbm_seven_zip() {
   if command -v 7zz >/dev/null 2>&1; then
     command -v 7zz
@@ -328,7 +407,7 @@ cbm_unquarantine() {
 
 # Copy the first exact basename match. Skips *.prg (a BASIC program, not a tool).
 cbm_install_tree_tool() {
-  local root="$1" dest="$2" name found
+  local root="$1" dest="$2" name found cpu host
   shift 2
   for name in "$@"; do
     case "$name" in
@@ -339,6 +418,14 @@ cbm_install_tree_tool() {
       cp "$found" "$dest"
       chmod +x "$dest"
       cbm_unquarantine "$dest"
+      if cpu="$(cbm_elf_cpu "$dest")"; then
+        host="$(cbm_host_cpu)"
+        if [[ "$host" != "other" && "$cpu" != "other" && "$cpu" != "$host" ]]; then
+          rm -f "$dest"
+          echo "$(basename "$dest") is a ${cpu} executable; this machine is ${host}. Not installed." >&2
+          return 1
+        fi
+      fi
       return 0
     fi
   done
