@@ -1,11 +1,16 @@
 id = "mega65"
-name = "CBM BASIC (MEGA65)"
-version = "0.6.2"
+name = "Commodore BASIC"
+version = "0.7.0"
 schema_version = 1
 authors = ["retroCombs <steven@retrocombs.com>"]
-description = "MEGA65 BASIC65 in Zed: navy listing (boot screen), phosphor-green Grok chrome, PETSCII tokens, etherload and XEMU"
+description = "Commodore BASIC for Zed: BASIC 2.0 on the VIC-20 and C64, BASIC65 on the MEGA65. Syntax highlighting, PETSCII snippets, petcat, VICE, XEMU, and etherload."
 repository = "https://github.com/stevencombs/mega65-zed"
-snippets = ["snippets/cbm basic.json"]
+snippets = ["snippets/commodore basic.json", "snippets/basic65.json"]
+
+[grammars.commodore_basic]
+repository = "https://github.com/stevencombs/mega65-zed"
+rev = "c57eff3f04c49ac63cdc68e7ae7a3dbe45637a0b"
+path = "grammars/tree-sitter-commodore-basic"
 
 [theme]
 name = "CBM machines"

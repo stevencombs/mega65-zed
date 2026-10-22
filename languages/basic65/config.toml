@@ -1,0 +1,11 @@
+name = "BASIC65"
+grammar = "commodore_basic"
+path_suffixes = ["b65", "m65"]
+line_comments = ["REM ", "rem "]
+tab_size = 2
+hard_tabs = false
+autoclose_before = ";:.,=)]"
+brackets = [
+    { start = "(", end = ")", close = true, newline = false },
+    { start = "\"", end = "\"", close = true, newline = false, not_in = ["string", "rem_statement"] },
+]
